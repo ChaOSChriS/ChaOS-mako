@@ -1618,11 +1618,18 @@ config MSM_CPU_FREQ_MIN
 
 endif # CPU_FREQ_MSM
 
+
 config CPU_UNDERCLOCK
 	bool "Enable CPU Underclocking"
 	default n
 	help
 	  Krait underclocking
+
+config MSM_SLEEPER
+	bool "Limit max frequency while screen is off"
+	default n
+	help
+	  Limit max frequency while screen is off
 
 config CPU_VOLTAGE_TABLE
 	bool "Enable CPU Voltage Table via sysfs for adjustements"
