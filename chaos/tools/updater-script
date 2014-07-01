@@ -1,0 +1,15 @@
+show_progress(0.1, 0);
+ui_print(" Checking device...");
+show_progress(0.1, 10);
+assert(getprop("ro.product.device") == "mako" || getprop("ro.build.product") == "mako" || getprop("ro.product.board") == "MAKO");
+ui_print(" Okay! mounting /system...");
+#run_program("/sbin/mount", "/dev/block/mmcblk0p21", "/system");
+mount("ext4", "EMMC", "/dev/block/mmcblk0p21", "/system");
+ui_print(" Nice! flashing kernel :) ...");
+package_extract_file("boot.img", "/dev/block/mmcblk0p6");
+package_extract_dir("system", "/system");
+show_progress(0.1, 10);
+show_progress(0.2, 0);
+show_progress(0.2, 10);
+unmount("/system");
+ui_print(" Done! thanks for flashing :)");
