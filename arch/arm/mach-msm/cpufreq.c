@@ -221,7 +221,7 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 #else
 		policy->cpuinfo.min_freq = CONFIG_MSM_CPU_FREQ_MIN;
 
-		policy->cpuinfo.max_freq = CONFIG_MSM_CPU_FREQ_MAX;
+#endif
 #endif
 	}
 #ifdef CONFIG_MSM_CPU_FREQ_SET_MIN_MAX
@@ -229,7 +229,6 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 	policy->min = LOW_CPUCLOCKS_FREQ_MIN;
 #else
 	policy->min = CONFIG_MSM_CPU_FREQ_MIN;
-	policy->max = CONFIG_MSM_CPU_FREQ_MAX;
 #endif
 
 	cur_freq = acpuclk_get_rate(policy->cpu);
