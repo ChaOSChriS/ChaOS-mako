@@ -220,13 +220,7 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 		policy->cpuinfo.min_freq = LOW_CPUCLOCKS_FREQ_MIN;
 #else
 		policy->cpuinfo.min_freq = CONFIG_MSM_CPU_FREQ_MIN;
-<<<<<<< HEAD
-=======
-#endif
-#ifdef CONFIG_CPU_OVERCLOCK
-		policy->cpuinfo.max_freq = OC_CPU_FREQ_MAX;
-#else
->>>>>>> 333569e... cpufreq: allow for low CPU clock policy when hotplugging new cores
+
 		policy->cpuinfo.max_freq = CONFIG_MSM_CPU_FREQ_MAX;
 #endif
 	}
@@ -235,13 +229,6 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 	policy->min = LOW_CPUCLOCKS_FREQ_MIN;
 #else
 	policy->min = CONFIG_MSM_CPU_FREQ_MIN;
-<<<<<<< HEAD
-=======
-#endif
-#ifdef CONFIG_CPU_OVERCLOCK
-	policy->max = OC_CPU_FREQ_MAX;
-#else
->>>>>>> 333569e... cpufreq: allow for low CPU clock policy when hotplugging new cores
 	policy->max = CONFIG_MSM_CPU_FREQ_MAX;
 #endif
 
