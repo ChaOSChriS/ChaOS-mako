@@ -56,34 +56,24 @@ echo "[BUILD]: creating output folders";
 
 mkdir -p $SD/out/$CODENAME
 mkdir -p $SD/out/$CODENAME/kernel
-mkdir -p $SD/out/$CODENAME/system/lib/modules
-mkdir -p $SD/out/$CODENAME/META-INF/com/google/android
+#mkdir -p $SD/out/$CODENAME/modules
+#mkdir -p $SD/out/$CODENAME/META-INF/com/google/android
 
 echo "[BUILD]: moving kernel and modules to output";
 
 mv $SD/arch/arm/boot/zImage $SD/out/$CODENAME/kernel/zImage
- find $SD/ -name \*.ko -exec cp '{}' $SD/out/$CODENAME/system/lib/modules/ ';'
+#find $SD/ -name \*.ko -exec cp '{}' $SD/out/$CODENAME/system/lib/modules/ ';'
+
+echo "[BUILD]: Cleaning out directory...";
+cd $SD/out/$CODENAME/
+find $SD/out/$CODENAME/* -maxdepth 0 ! -name '*.zip' ! -name '*.md5' ! -name '*.sha1' ! -name kernel ! -name modules ! -name out -exec rm -rf '{}' ';'
 
 echo "[BUILD]: copy flashing tools to output";
 
-cp -R $SD/chaos/tools/update-binary $SD/out/$CODENAME/META-INF/com/google/android/update-binary
-cp -R $SD/chaos/tools/updater-script $SD/out/$CODENAME/META-INF/com/google/android/updater-script
-cp -R $SD/chaos/tools/flash_image $SD/out/$CODENAME/flash_image
-
-echo "[BUILD]: creating boot.img ...";
-cd $SD/out/$CODENAME
-$SD/chaos/tools/mkbootfs $SD/chaos/$RD | gzip > $SD/out/$CODENAME/boot.img-ramdisk.cpio.gz
-$SD/chaos/tools/mkbootimg --base 0 --pagesize 2048 --kernel_offset 0x80208000 --ramdisk_offset 0x81800000 --second_offset 0x81100000 --tags_offset 0x80200100 --cmdline 'console=ttyHSL0,115200,n8 androidboot.hardware=mako lpj=67677 user_debug=31' --kernel $SD/out/$CODENAME/kernel/zImage --ramdisk $SD/out/$CODENAME/boot.img-ramdisk.cpio.gz -o boot.img
-
-echo "[BUILD]: creating flashing-zip";
-
-cd $SD/out/$CODENAME
-zip -r "$CODENAME"_"$DATE"_"$BRANCH"-"$REV".zip META-INF/ system/ boot.img flash_image
-OUTPUT_ZIP=$CODENAME"_"$DATE"_"$BRANCH"-"$REV"
-cd $SD
-echo "[BUILD]: Siging";
-java -jar $SD/chaos/tools/signapk.jar $SD/chaos/tools/testkey.x509.pem $SD/chaos/tools/testkey.pk8 $SD/out/$CODENAME/$OUTPUT_ZIP.zip $SD/out/$CODENAME/$OUTPUT_ZIP-signed.zip
-rm $SD/out/$CODENAME/$OUTPUT_ZIP.zip
-
-echo "[BUILD]: Done!! look in /out ;)";
+cp -R $SD/chaos/tools/* $SD/out/$CODENAME
+cd $SD/out/$CODENAME/
+ #create zip and clean folder
+    echo "[BUILD]: Creating zip: ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".zip ...";
+    zip -r ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".zip . -x "*.zip" "*.sha1" "*.md5"
+    echo "[BUILD]: Done!...";
 
