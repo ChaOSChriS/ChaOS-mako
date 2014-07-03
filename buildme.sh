@@ -73,4 +73,5 @@ cd $SD/out/$CODENAME/
     echo "[BUILD]: Creating zip: ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".zip ...";
     zip -r ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".zip . -x "*.zip" "*.sha1" "*.md5"
     echo "[BUILD]: Done!...";
+cd $SD
 
