@@ -3,9 +3,6 @@
 SD="$(pwd)"
 CODENAME="mako"
 DEFCONFIG="mako_defconfig"
-RD=ramdisk
-MKRam=$SD/chaos/tools/mkbootfs
-MKBoot=$SD/chaos/tools/mkbootimg
 NRJOBS=$(( $(nproc) * 2 ))
 
 export PATH=$PATH:$SD/chaos/toolchain/arm-eabi-4.6/bin
@@ -76,4 +73,5 @@ cd $SD/out/$CODENAME/
     echo "[BUILD]: Creating zip: ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".zip ...";
     zip -r ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".zip . -x "*.zip" "*.sha1" "*.md5"
     echo "[BUILD]: Done!...";
+cd $SD
 

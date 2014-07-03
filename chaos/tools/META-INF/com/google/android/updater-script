@@ -51,7 +51,7 @@ unmount("/system");
 set_progress(0.8);
 
 # repack boot
-ui_print("Repack boot.img with Bricked &");
+ui_print("Repack boot.img");
 ui_print("Installing kernel...");
 run_program("/tmp/mkbootimg.sh");
 set_progress(0.9);
