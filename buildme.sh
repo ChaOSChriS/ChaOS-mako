@@ -72,6 +72,9 @@ cd $SD/out/$CODENAME/
  #create zip and clean folder
     echo "[BUILD]: Creating zip: ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".zip ...";
     zip -r ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".zip . -x "*.zip" "*.sha1" "*.md5"
-    echo "[BUILD]: Done!...";
+echo "[BUILD]: Creating changelog: ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".txt ...";
 cd $SD
+git log --pretty=format:'%h (%an) : %s' --graph $REV^..HEAD > $SD/out/$CODENAME/ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".txt
+    echo "[BUILD]: Done!...";
+
 
