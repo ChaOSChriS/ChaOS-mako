@@ -4,11 +4,19 @@ SD="$(pwd)"
 CODENAME="mako"
 DEFCONFIG="mako_defconfig"
 NRJOBS=$(( $(nproc) * 2 ))
-
-export PATH=$PATH:$SD/chaos/toolchain/arm-eabi-4.6/bin
+if [ "$2" = "linaro" ]; then
 export ARCH=arm
-export SUBARCH=arm
-export CROSS_COMPILE=arm-eabi-
+export CROSS_COMPILE=$SD/chaos/toolchain/arm-cortex_a9-linux-gnueabihf-linaro_4.9.1-2014.06/bin/arm-cortex_a9-linux-gnueabihf-
+echo "[BUILD]: Used Toolchain:  ";
+arm-cortex_a9-linux-gnueabihf-gcc --version;
+else
+export CROSS_COMPILE=$SD/chaos/toolchain/arm-eabi-4.6/bin/arm-eabi-
+export ARCH=arm
+echo "[BUILD]: Used Toolchain: " ;
+arm-eabi-gcc --version;
+fi
+
+
 
 #if we are not called with an argument, default to branch master
 if [ -z "$1" ]; then
