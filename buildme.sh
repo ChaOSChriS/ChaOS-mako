@@ -4,18 +4,6 @@ SD="$(pwd)"
 CODENAME="mako"
 DEFCONFIG="mako_defconfig"
 NRJOBS=$(( $(nproc) * 2 ))
-if [ "$2" = "linaro" ]; then
-export ARCH=arm
-export CROSS_COMPILE=$SD/chaos/toolchain/arm-cortex_a9-linux-gnueabihf-linaro_4.9.1-2014.06/bin/arm-cortex_a9-linux-gnueabihf-
-echo "[BUILD]: Used Toolchain:  ";
-arm-cortex_a9-linux-gnueabihf-gcc --version;
-else
-export CROSS_COMPILE=$SD/chaos/toolchain/arm-eabi-4.6/bin/arm-eabi-
-export ARCH=arm
-echo "[BUILD]: Used Toolchain: " ;
-arm-eabi-gcc --version;
-fi
-
 
 
 #if we are not called with an argument, default to branch master
@@ -26,6 +14,20 @@ if [ -z "$1" ]; then
 else
   BRANCH=$1;
   echo "[BUILD]: Current Branch: $BRANCH";
+fi
+
+if [ "$2" = "linaro" ]; then
+DEFCONFIG="mako_linaro_defconfig"
+
+export ARCH=arm
+export CROSS_COMPILE=$SD/chaos/toolchain/arm-cortex_a9-linux-gnueabihf-linaro_4.9.1-2014.06/bin/arm-cortex_a9-linux-gnueabihf-
+echo "[BUILD]: Used Toolchain:  ";
+$SD/chaos/toolchain/arm-cortex_a9-linux-gnueabihf-linaro_4.9.1-2014.06/bin/arm-cortex_a9-linux-gnueabihf-gcc --version;
+else
+export CROSS_COMPILE=$SD/chaos/toolchain/arm-eabi-4.6/bin/arm-eabi-
+export ARCH=arm
+echo "[BUILD]: Used Toolchain: " ;
+$SD/chaos/toolchain/arm-eabi-4.6/bin/arm-eabi-gcc --version;
 fi
 
 #saving new rev
@@ -40,8 +42,13 @@ echo "[BUILD]: Cleaning kernel (make mrproper)...";
 make mrproper
 echo "[BUILD]: Using defconfig: $DEFCONFIG...";
 make $DEFCONFIG
+if [ "$2" = "linaro" ]; then
+echo "[BUILD]: Changing CONFIG_LOCALVERSION to: -ChaOS-"$CODENAME"-"$BRANCH-l" ...";
+sed -i "/CONFIG_LOCALVERSION=\"/c\CONFIG_LOCALVERSION=\"-ChaOS-"$CODENAME"-"$BRANCH"-l""\"" .config
+else
 echo "[BUILD]: Changing CONFIG_LOCALVERSION to: -ChaOS-"$CODENAME"-"$BRANCH" ...";
 sed -i "/CONFIG_LOCALVERSION=\"/c\CONFIG_LOCALVERSION=\"-ChaOS-"$CODENAME"-"$BRANCH"\"" .config
+fi
 
 
 
@@ -77,6 +84,15 @@ echo "[BUILD]: copy flashing tools to output";
 
 cp -R $SD/chaos/tools/* $SD/out/$CODENAME
 cd $SD/out/$CODENAME/
+if [ "$2" = "linaro" ]; then
+ #create zip and clean folder
+    echo "[BUILD]: Creating zip: ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV"-"$2".zip ...";
+    zip -r ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV"-"$2".zip . -x "*.zip" "*.sha1" "*.md5"
+echo "[BUILD]: Creating changelog: ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV"-"$2".txt ...";
+cd $SD
+git log --pretty=format:'%h (%an) : %s' --graph $REV^..HEAD > $SD/out/$CODENAME/ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV"-"$2".txt
+    echo "[BUILD]: Done!...";
+else
  #create zip and clean folder
     echo "[BUILD]: Creating zip: ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".zip ...";
     zip -r ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".zip . -x "*.zip" "*.sha1" "*.md5"
@@ -84,5 +100,6 @@ echo "[BUILD]: Creating changelog: ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".tx
 cd $SD
 git log --pretty=format:'%h (%an) : %s' --graph $REV^..HEAD > $SD/out/$CODENAME/ChaOS_"$CODENAME"_"$DATE"_"$BRANCH"-"$REV".txt
     echo "[BUILD]: Done!...";
+fi
 
 
