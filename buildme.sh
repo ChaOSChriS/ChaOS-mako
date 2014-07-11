@@ -20,14 +20,14 @@ if [ "$2" = "linaro" ]; then
 DEFCONFIG="mako_linaro_defconfig"
 
 export ARCH=arm
-export CROSS_COMPILE=$SD/chaos/toolchain/arm-cortex_a9-linux-gnueabihf-linaro_4.9.1-2014.06/bin/arm-cortex_a9-linux-gnueabihf-
+export CROSS_COMPILE=$SD/chaos/toolchain/arm-cortex_a15-linux-gnueabihf-linaro_4.7.4-2014.04/bin/arm-cortex_a15-linux-gnueabihf-
 echo "[BUILD]: Used Toolchain:  ";
-$SD/chaos/toolchain/arm-cortex_a9-linux-gnueabihf-linaro_4.9.1-2014.06/bin/arm-cortex_a9-linux-gnueabihf-gcc --version;
+$SD/chaos/toolchain/arm-cortex_a15-linux-gnueabihf-linaro_4.7.4-2014.04/bin/arm-cortex_a15-linux-gnueabihf-gcc --version;
 else
-export CROSS_COMPILE=$SD/chaos/toolchain/arm-eabi-4.6/bin/arm-eabi-
+export CROSS_COMPILE=$SD/chaos/toolchain/arm-eabi-4.7/bin/arm-eabi-
 export ARCH=arm
 echo "[BUILD]: Used Toolchain: " ;
-$SD/chaos/toolchain/arm-eabi-4.6/bin/arm-eabi-gcc --version;
+$SD/chaos/toolchain/arm-eabi-4.7/bin/arm-eabi-gcc --version;
 fi
 
 #saving new rev
