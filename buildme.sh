@@ -4,7 +4,7 @@ SD="$(pwd)"
 CODENAME="mako"
 DEFCONFIG="mako_defconfig"
 NRJOBS=$(( $(nproc) * 2 ))
-
+TOOLCHAIN="$SD/chaos/toolchain/arm-eabi-4.7/bin"
 
 #if we are not called with an argument, default to branch master
 if [ -z "$1" ]; then
@@ -18,16 +18,16 @@ fi
 
 if [ "$2" = "linaro" ]; then
 DEFCONFIG="mako_linaro_defconfig"
-
+TOOLCHAIN="$SD/chaos/toolchain/arm-cortex_a15-linux-gnueabihf-linaro_4.7.4-2014.04/bin"
 export ARCH=arm
-export CROSS_COMPILE=$SD/chaos/toolchain/arm-cortex_a15-linux-gnueabihf-linaro_4.7.4-2014.04/bin/arm-cortex_a15-linux-gnueabihf-
+export CROSS_COMPILE=$TOOLCHAIN/arm-cortex_a15-linux-gnueabihf-
 echo "[BUILD]: Used Toolchain:  ";
-$SD/chaos/toolchain/arm-cortex_a15-linux-gnueabihf-linaro_4.7.4-2014.04/bin/arm-cortex_a15-linux-gnueabihf-gcc --version;
+$TOOLCHAIN/arm-cortex_a15-linux-gnueabihf-gcc --version;
 else
-export CROSS_COMPILE=$SD/chaos/toolchain/arm-eabi-4.7/bin/arm-eabi-
+export CROSS_COMPILE=$TOOLCHAIN/arm-eabi-
 export ARCH=arm
 echo "[BUILD]: Used Toolchain: " ;
-$SD/chaos/toolchain/arm-eabi-4.7/bin/arm-eabi-gcc --version;
+$TOOLCHAIN/arm-eabi-gcc --version;
 fi
 
 #saving new rev
@@ -50,7 +50,36 @@ echo "[BUILD]: Changing CONFIG_LOCALVERSION to: -ChaOS-"$CODENAME"-"$BRANCH" ...
 sed -i "/CONFIG_LOCALVERSION=\"/c\CONFIG_LOCALVERSION=\"-ChaOS-"$CODENAME"-"$BRANCH"\"" .config
 fi
 
+###CCACHE CONFIGURATION STARTS HERE, DO NOT MESS WITH IT!!!
+TOOLCHAIN_CCACHE="$TOOLCHAIN/../bin-ccache"
+gototoolchain() {
+  echo "[BUILD]: Changing directory to $TOOLCHAIN/../ ...";
+  cd $TOOLCHAIN/../
+}
 
+gotocctoolchain() {
+  echo "[BUILD]: Changing directory to $TOOLCHAIN_CCACHE...";
+  cd $TOOLCHAIN_CCACHE
+}
+
+#check ccache configuration
+#if not configured, do that now.
+if [ ! -d "$TOOLCHAIN_CCACHE" ]; then
+    echo "[BUILD]: CCACHE: not configured! Doing it now...";
+    gototoolchain
+    mkdir bin-ccache
+    gotocctoolchain
+    ln -s $(which ccache) "$CROSSCC""gcc"
+    ln -s $(which ccache) "$CROSSCC""g++"
+    ln -s $(which ccache) "$CROSSCC""cpp"
+    ln -s $(which ccache) "$CROSSCC""c++"
+    gototoolchain
+    chmod -R 777 bin-ccache
+    echo "[BUILD]: CCACHE: Done...";
+fi
+export CCACHE_DIR=$USERCCDIR
+cd $SD
+###CCACHE CONFIGURATION ENDS HERE, DO NOT MESS WITH IT!!!
 
 echo "[BUILD]: Bulding the kernel...";
 time make -j$NRJOBS || { return 1; }
